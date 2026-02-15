@@ -87,28 +87,56 @@ textarea#editor {
 /* Preview Specifics */
 #preview {
   flex: 1;
-  padding: 20px;
-  overflow-y: auto; /* Enable scroll inside preview */
-  background-color: #fff;
-  color: #333;
+  padding: 40px; /* Increased padding for better readability */
+  overflow-y: auto;
+  background-color: white;
+  color: #24292e; /* GitHub's text color */
+  line-height: 1.6;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 /* Preview Typography */
 #preview h1,
-#preview h2 {
+#preview h2,
+#preview h3 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
   border-bottom: 1px solid #eaecef;
   padding-bottom: 0.3em;
 }
 #preview code {
-  background-color: rgba(27, 31, 35, 0.05);
   padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(27, 31, 35, 0.05);
   border-radius: 3px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+#preview p,
+#preview blockquote,
+#preview ul,
+#preview ol,
+#preview dl,
+#preview table,
+#preview pre {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+/* Fixing List Indentation */
+#preview ul,
+#preview ol {
+  padding-left: 2em;
 }
 #preview pre {
-  background-color: #2d2d2d;
   padding: 16px;
-  border-radius: 6px;
   overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 6px;
 }
 #preview blockquote {
   border-left: 4px solid #dfe2e5;
