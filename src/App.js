@@ -2,14 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { marked } from "marked";
 import Prism from "prismjs";
 import DOMPurify from "dompurify";
+import { saveAs } from "file-saver";
+import htmlDocx from "html-docx-js/dist/html-docx"; // <--- FIX 1: Import the whole object
 
 // Import Components and Styles
-import HelpModal from "./HelpModal"; // <--- New Import
+import HelpModal from "./HelpModal";
 import "prismjs/themes/prism-tomorrow.css";
 import "./App.css";
 import { defaultText } from "./defaultMarkdown";
 
-// Configure marked options.
+// Configure marked options
 marked.setOptions({
   breaks: true,
   gfm: true,
@@ -23,10 +25,8 @@ const App = () => {
   // 1. STATE & REFS
   // ------------------------------------------------------
 
-  // App State
-  const [showHelp, setShowHelp] = useState(false); // <--- New State for Modal
+  const [showHelp, setShowHelp] = useState(false);
 
-  // Content State (Load from LocalStorage)
   const [content, setContent] = useState(() => {
     const savedVersion = localStorage.getItem("app-version");
     const savedContent = localStorage.getItem("markdown-content");
@@ -38,7 +38,6 @@ const App = () => {
     return savedContent || defaultText;
   });
 
-  // Refs for Scrolling & Cursor
   const textAreaRef = useRef(null);
   const previewRef = useRef(null);
 
@@ -69,7 +68,7 @@ const App = () => {
     }
   };
 
-  // Insert Formatting (Bold, Italic, etc.)
+  // Insert Formatting
   const insertMarkdown = (prefix, suffix) => {
     const textarea = textAreaRef.current;
     if (!textarea) return;
@@ -90,7 +89,7 @@ const App = () => {
     }, 0);
   };
 
-  // Download File
+  // Download .md File
   const handleDownload = () => {
     const element = document.createElement("a");
     const file = new Blob([content], { type: "text/markdown" });
@@ -101,14 +100,50 @@ const App = () => {
     document.body.removeChild(element);
   };
 
-  // Reset Editor
+  // NEW: Download .docx (Word) File
+  const handleDownloadDoc = () => {
+    const htmlString = marked(content);
+
+    const fullHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: 'Calibri', sans-serif; font-size: 11pt; line-height: 1.5; }
+            h1 { font-size: 24pt; color: #2E74B5; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+            h2 { font-size: 18pt; color: #2E74B5; margin-top: 20px; }
+            h3 { font-size: 14pt; color: #1f4e79; }
+            code { font-family: 'Consolas', monospace; background: #e0e0e0; color: #d63384; padding: 2px 4px; border-radius: 3px; }
+            pre { background: #f0f0f0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+            blockquote { border-left: 4px solid #ccc; padding-left: 10px; color: #666; font-style: italic; }
+            table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+            th { background-color: #f2f2f2; font-weight: bold; text-align: left; }
+            th, td { border: 1px solid #ccc; padding: 8px; }
+            img { max-width: 100%; height: auto; }
+          </style>
+        </head>
+        <body>
+          ${htmlString}
+        </body>
+      </html>
+    `;
+
+    // FIX 2: Call asBlob from the imported object
+    const converted = htmlDocx.asBlob(fullHtml, {
+      orientation: "portrait",
+      margins: { top: 720 },
+    });
+
+    saveAs(converted, "document.docx");
+  };
+
   const resetEditor = () => {
     if (window.confirm("Are you sure? This will delete your current text.")) {
       setContent(defaultText);
     }
   };
 
-  // Copy HTML
   const copyHtml = () => {
     const rawMarkup = marked(content);
     navigator.clipboard.writeText(rawMarkup).then(() => {
@@ -116,7 +151,6 @@ const App = () => {
     });
   };
 
-  // Convert to HTML safely
   const getMarkdownText = () => {
     const rawMarkup = marked(content);
     const cleanMarkup = DOMPurify.sanitize(rawMarkup);
@@ -129,11 +163,9 @@ const App = () => {
 
   return (
     <div className="app-container">
-      {/* Header */}
       <header className="main-header">
         <h1>Markdown Studio</h1>
         <div className="header-actions">
-          {/* Help Button */}
           <button
             onClick={() => setShowHelp(true)}
             className="btn"
@@ -146,15 +178,24 @@ const App = () => {
           <button onClick={resetEditor} className="btn btn-danger">
             Reset
           </button>
+
+          <button
+            onClick={handleDownloadDoc}
+            className="btn"
+            style={{ backgroundColor: "#2b5797", color: "white" }}
+            title="Download as Word Document"
+          >
+            Word
+          </button>
+
           <button onClick={handleDownload} className="btn btn-primary">
-            Download .md
+            MD
           </button>
         </div>
       </header>
 
-      {/* Main Split Layout */}
       <main className="editor-container">
-        {/* LEFT PANE: EDITOR */}
+        {/* EDITOR PANE */}
         <section className="pane editor-pane">
           <div className="toolbar">
             <button onClick={() => insertMarkdown("**", "**")} title="Bold">
@@ -206,7 +247,7 @@ const App = () => {
           />
         </section>
 
-        {/* RIGHT PANE: PREVIEW */}
+        {/* PREVIEW PANE */}
         <section className="pane preview-pane">
           <div className="toolbar preview-toolbar">
             <span>Preview</span>
@@ -223,7 +264,7 @@ const App = () => {
         </section>
       </main>
 
-      {/* Render Modal if 'showHelp' is true */}
+      {/* Cheat Sheet Modal */}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
     </div>
   );
