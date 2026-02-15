@@ -1,38 +1,346 @@
-.App {
-  text-align: center;
+/* Reset & Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  height: 100vh;
+  overflow: hidden; /* Prevent body scroll, let panes scroll */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Container */
+.app-container {
   display: flex;
   flex-direction: column;
+  height: 100vh;
+}
+
+/* Toolbar */
+.toolbar {
+  background-color: #2d2d2d;
+  padding: 10px 20px;
+  border-bottom: 1px solid #444;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  height: 50px;
+}
+
+.toolbar h1 {
+  font-size: 1.2rem;
+  color: #61dafb; /* React Blue */
+}
+
+.status {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+/* Main Split Layout */
+.editor-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden; /* Important for independent scrolling */
+}
+
+/* Pane Generic Styles */
+.pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-right: 1px solid #444;
+}
+
+.pane:last-child {
+  border-right: none;
+}
+
+.pane-header {
+  background: #252526;
+  padding: 5px 15px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #aaa;
+  border-bottom: 1px solid #333;
+}
+
+/* Editor Specifics */
+textarea#editor {
+  flex: 1;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  border: none;
+  padding: 20px;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 14px;
+  resize: none; /* User cannot resize manually */
+  outline: none;
+}
+
+/* Preview Specifics */
+#preview {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto; /* Enable scroll inside preview */
+  background-color: #fff;
+  color: #333;
+}
+
+/* Preview Typography */
+#preview h1,
+#preview h2 {
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3em;
+}
+#preview code {
+  background-color: rgba(27, 31, 35, 0.05);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+#preview pre {
+  background-color: #2d2d2d;
+  padding: 16px;
+  border-radius: 6px;
+  overflow: auto;
+}
+#preview blockquote {
+  border-left: 4px solid #dfe2e5;
+  color: #6a737d;
+  padding-left: 1em;
+}
+#preview img {
+  max-width: 100%;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .editor-container {
+    flex-direction: column;
+  }
+
+  .pane {
+    height: 50%;
+    border-right: none;
+    border-bottom: 1px solid #444;
+  }
+
+  body {
+    overflow: auto; /* Allow full page scroll on mobile if needed */
+  }
+}
+.btn-download {
+  background-color: #61dafb;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #1e1e1e;
+  transition: background 0.2s;
+}
+
+.btn-download:hover {
+  background-color: #4fa8c7;
+}
+/* Base Setup */
+:root {
+  --bg-dark: #1e1e1e;
+  --bg-panel: #252526;
+  --bg-toolbar: #2d2d2d;
+  --accent: #61dafb;
+  --text-main: #d4d4d4;
+  --border: #3e3e42;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Main Header */
+.main-header {
+  background-color: var(--bg-toolbar);
+  padding: 0 20px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.main-header h1 {
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+/* Buttons Generic */
+.btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-left: 10px;
+}
+.btn-primary {
+  background-color: var(--accent);
+  color: #111;
+}
+.btn-primary:hover {
+  background-color: #4fa8c7;
+}
+.btn-danger {
+  background-color: transparent;
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+}
+.btn-danger:hover {
+  background-color: #ff6b6b;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+/* Layout */
+.editor-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.editor-pane {
+  border-right: 1px solid var(--border);
+}
+
+/* Toolbar (The new part) */
+.toolbar {
+  background: var(--bg-panel);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.toolbar button {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #ccc;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.toolbar button:hover {
+  background-color: #3e3e42;
+  color: white;
+}
+.separator {
+  color: #555;
+  margin: 0 5px;
+}
+
+/* Preview Header tweaks */
+.preview-toolbar {
+  justify-content: space-between;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #aaa;
+}
+.btn-small {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+.btn-small:hover {
+  background: #666;
+}
+
+/* Editor & Preview Content */
+textarea#editor {
+  flex: 1;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  border: none;
+  padding: 20px;
+  font-family: "Consolas", monospace;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  line-height: 1.5;
+}
+
+#preview {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: white;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Make images inside preview responsive */
+#preview img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px 0;
+}
+#preview blockquote {
+  border-left: 4px solid #dfe2e5;
+  color: #6a737d;
+  padding-left: 1rem;
+  margin-left: 0;
+}
+#preview pre {
+  background: #f6f8fa;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .editor-container {
+    flex-direction: column;
   }
-  to {
-    transform: rotate(360deg);
+  .editor-pane {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    height: 50%;
   }
 }
