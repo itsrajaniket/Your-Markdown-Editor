@@ -7,7 +7,7 @@ This tool allows users to write in Markdown and see a real-time, high-fidelity p
 
 ## 🚀 Live Demo
 
-Check out the app here: [Live Demo](https://YOUR-USERNAME.github.io/YOUR-REPO-NAME)
+Check out the app here: [Live Demo](https://markdown-studio-pro.netlify.app/)
 
 ---
 
