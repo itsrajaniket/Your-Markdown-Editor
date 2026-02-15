@@ -1,6 +1,6 @@
 export const defaultText = `
 # Welcome to Your Markdown Editor!
-
+**✨ New Feature:** You can **Drag & Drop** any \`.md\` or \`.txt\` file into this window to edit it instantly!
 This is a live demo. **Change anything on the left**, and see it appear on the right. 
 
 ---

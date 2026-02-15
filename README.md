@@ -1,70 +1,49 @@
-# Getting Started with Create React App
+# 📝 Markdown Studio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A fast, responsive, and feature-rich web-based Markdown editor built with React.  
+This tool allows users to write in Markdown and see a real-time, high-fidelity preview with syntax highlighting, export options, and a professional **Split-Pane** layout.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Live Demo
 
-### `npm start`
+Check out the app here: [Live Demo](https://YOUR-USERNAME.github.io/YOUR-REPO-NAME)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ✨ Key Features
 
-### `npm test`
+### 🛠 Powerful Editor & Preview
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Split-Pane Layout**: Write on the left, see the result instantly on the right.
+- **Synchronized Scrolling**: Preview pane follows your editor scroll position automatically.
+- **Syntax Highlighting**: Beautiful code blocks powered by Prism.js.
+- **XSS Protection**: All HTML output sanitized using DOMPurify.
 
-### `npm run build`
+### 📁 File Management
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Drag & Drop**: Drop any `.md` or `.txt` file directly into the editor.
+- **File Picker**: Browse and upload files from your local machine.
+- **Auto-Save**: Work is saved to Local Storage automatically.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 📥 Multiple Export Options
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Download Markdown**: Save your work as `.md`.
+- **Download Word (.docx)**: Export to Microsoft Word with styling.
+- **Copy HTML**: One-click button to copy generated HTML.
 
-### `npm run eject`
+### 💡 User Experience (UX)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Formatting Toolbar**: Quick-access buttons for Bold, Italic, Headers, Lists, Quotes.
+- **Cheat Sheet**: Slide-out "Help" panel for Markdown syntax.
+- **Responsive Design**: Works on Desktop, Tablet, and Mobile.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🛠 Tech Stack
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Library**: React.js (Hooks, Refs)
+- **Parsing**: Marked.js
+- **Styling**: CSS3 (Flexbox, Variables, Animations)
+- **Highlighting**: Prism.js
+- **Word Export**: html-docx-js & FileSaver.js

@@ -3,29 +3,23 @@ import { marked } from "marked";
 import Prism from "prismjs";
 import DOMPurify from "dompurify";
 import { saveAs } from "file-saver";
-import htmlDocx from "html-docx-js/dist/html-docx"; // <--- FIX 1: Import the whole object
+import htmlDocx from "html-docx-js/dist/html-docx";
 
-// Import Components and Styles
 import HelpModal from "./HelpModal";
 import "prismjs/themes/prism-tomorrow.css";
 import "./App.css";
 import { defaultText } from "./defaultMarkdown";
 
-// Configure marked options
-marked.setOptions({
-  breaks: true,
-  gfm: true,
-});
+marked.setOptions({ breaks: true, gfm: true });
 
-// Version control for default text
 const CURRENT_VERSION = "v1.0";
 
 const App = () => {
   // ------------------------------------------------------
   // 1. STATE & REFS
   // ------------------------------------------------------
-
   const [showHelp, setShowHelp] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const [content, setContent] = useState(() => {
     const savedVersion = localStorage.getItem("app-version");
@@ -40,11 +34,11 @@ const App = () => {
 
   const textAreaRef = useRef(null);
   const previewRef = useRef(null);
+  const fileInputRef = useRef(null); // <--- NEW: Ref for the hidden file input
 
   // ------------------------------------------------------
   // 2. EFFECTS
   // ------------------------------------------------------
-
   useEffect(() => {
     localStorage.setItem("markdown-content", content);
     Prism.highlightAll();
@@ -53,10 +47,8 @@ const App = () => {
   // ------------------------------------------------------
   // 3. HANDLERS
   // ------------------------------------------------------
-
   const handleChange = (e) => setContent(e.target.value);
 
-  // Synchronized Scrolling
   const handleScroll = () => {
     const editor = textAreaRef.current;
     const preview = previewRef.current;
@@ -68,28 +60,68 @@ const App = () => {
     }
   };
 
-  // Insert Formatting
   const insertMarkdown = (prefix, suffix) => {
     const textarea = textAreaRef.current;
     if (!textarea) return;
-
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = content;
-
     const before = text.substring(0, start);
     const select = text.substring(start, end);
     const after = text.substring(end);
-
     setContent(before + prefix + select + suffix + after);
-
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(start + prefix.length, end + prefix.length);
     }, 0);
   };
 
-  // Download .md File
+  // --- Drag & Drop Logic ---
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    readFile(file);
+  };
+
+  // --- NEW: File Picker Logic ---
+  const triggerFileSelect = () => {
+    fileInputRef.current.click(); // Triggers the hidden input
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    readFile(file);
+  };
+
+  // Shared function to read files (used by both Drop and Picker)
+  const readFile = (file) => {
+    if (
+      file &&
+      (file.name.endsWith(".md") ||
+        file.name.endsWith(".txt") ||
+        file.type === "text/plain")
+    ) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setContent(event.target.result);
+      };
+      reader.readAsText(file);
+    } else {
+      alert("Please upload a valid Markdown (.md) or Text (.txt) file.");
+    }
+  };
+
+  // --- Exports ---
   const handleDownload = () => {
     const element = document.createElement("a");
     const file = new Blob([content], { type: "text/markdown" });
@@ -100,41 +132,13 @@ const App = () => {
     document.body.removeChild(element);
   };
 
-  // NEW: Download .docx (Word) File
   const handleDownloadDoc = () => {
     const htmlString = marked(content);
-
-    const fullHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <style>
-            body { font-family: 'Calibri', sans-serif; font-size: 11pt; line-height: 1.5; }
-            h1 { font-size: 24pt; color: #2E74B5; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-            h2 { font-size: 18pt; color: #2E74B5; margin-top: 20px; }
-            h3 { font-size: 14pt; color: #1f4e79; }
-            code { font-family: 'Consolas', monospace; background: #e0e0e0; color: #d63384; padding: 2px 4px; border-radius: 3px; }
-            pre { background: #f0f0f0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-            blockquote { border-left: 4px solid #ccc; padding-left: 10px; color: #666; font-style: italic; }
-            table { border-collapse: collapse; width: 100%; margin: 15px 0; }
-            th { background-color: #f2f2f2; font-weight: bold; text-align: left; }
-            th, td { border: 1px solid #ccc; padding: 8px; }
-            img { max-width: 100%; height: auto; }
-          </style>
-        </head>
-        <body>
-          ${htmlString}
-        </body>
-      </html>
-    `;
-
-    // FIX 2: Call asBlob from the imported object
+    const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${htmlString}</body></html>`;
     const converted = htmlDocx.asBlob(fullHtml, {
       orientation: "portrait",
       margins: { top: 720 },
     });
-
     saveAs(converted, "document.docx");
   };
 
@@ -146,9 +150,7 @@ const App = () => {
 
   const copyHtml = () => {
     const rawMarkup = marked(content);
-    navigator.clipboard.writeText(rawMarkup).then(() => {
-      alert("HTML copied to clipboard!");
-    });
+    navigator.clipboard.writeText(rawMarkup).then(() => alert("HTML copied!"));
   };
 
   const getMarkdownText = () => {
@@ -160,34 +162,50 @@ const App = () => {
   // ------------------------------------------------------
   // 4. RENDER
   // ------------------------------------------------------
-
   return (
     <div className="app-container">
       <header className="main-header">
         <h1>Markdown Studio</h1>
         <div className="header-actions">
+          {/* --- NEW: Hidden Input + Visible Button --- */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            accept=".md,.txt"
+            onChange={handleFileSelect}
+          />
+          <button
+            onClick={triggerFileSelect}
+            className="btn"
+            style={{
+              backgroundColor: "#e67e22",
+              color: "white",
+              marginRight: "5px",
+            }}
+            title="Open File"
+          >
+            Upload your file
+          </button>
+          {/* ------------------------------------------- */}
+
           <button
             onClick={() => setShowHelp(true)}
             className="btn"
-            style={{ color: "#aaa", fontSize: "1.2rem", marginRight: "10px" }}
-            title="Cheat Sheet"
+            style={{ color: "black", fontSize: "0.9rem", marginRight: "10px" }}
           >
             ?
           </button>
-
           <button onClick={resetEditor} className="btn btn-danger">
             Reset
           </button>
-
           <button
             onClick={handleDownloadDoc}
             className="btn"
             style={{ backgroundColor: "#2b5797", color: "white" }}
-            title="Download as Word Document"
           >
             Word
           </button>
-
           <button onClick={handleDownload} className="btn btn-primary">
             MD
           </button>
@@ -195,46 +213,27 @@ const App = () => {
       </header>
 
       <main className="editor-container">
-        {/* EDITOR PANE */}
-        <section className="pane editor-pane">
+        <section
+          className={`pane editor-pane ${isDragging ? "drag-active" : ""}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           <div className="toolbar">
-            <button onClick={() => insertMarkdown("**", "**")} title="Bold">
-              B
-            </button>
-            <button onClick={() => insertMarkdown("_", "_")} title="Italic">
-              I
-            </button>
-            <button
-              onClick={() => insertMarkdown("~~", "~~")}
-              title="Strikethrough"
-            >
-              S
-            </button>
+            <button onClick={() => insertMarkdown("**", "**")}>B</button>
+            <button onClick={() => insertMarkdown("_", "_")}>I</button>
+            <button onClick={() => insertMarkdown("~~", "~~")}>S</button>
             <span className="separator">|</span>
-            <button onClick={() => insertMarkdown("# ", "")} title="Heading 1">
-              H1
-            </button>
-            <button onClick={() => insertMarkdown("## ", "")} title="Heading 2">
-              H2
-            </button>
+            <button onClick={() => insertMarkdown("# ", "")}>H1</button>
+            <button onClick={() => insertMarkdown("## ", "")}>H2</button>
             <span className="separator">|</span>
-            <button
-              onClick={() => insertMarkdown("`", "`")}
-              title="Inline Code"
-            >
-              &lt;/&gt;
-            </button>
+            <button onClick={() => insertMarkdown("`", "`")}>&lt;/&gt;</button>
             <button
               onClick={() => insertMarkdown("```\n", "\n```")}
-              title="Code Block"
             >{`{ }`}</button>
             <span className="separator">|</span>
-            <button onClick={() => insertMarkdown("- ", "")} title="List">
-              • List
-            </button>
-            <button onClick={() => insertMarkdown("> ", "")} title="Quote">
-              “ Quote
-            </button>
+            <button onClick={() => insertMarkdown("- ", "")}>• List</button>
+            <button onClick={() => insertMarkdown("> ", "")}>“ Quote</button>
           </div>
 
           <textarea
@@ -243,11 +242,10 @@ const App = () => {
             value={content}
             onChange={handleChange}
             onScroll={handleScroll}
-            placeholder="Type your markdown here..."
+            placeholder="Type your markdown here, or drag & drop a file..."
           />
         </section>
 
-        {/* PREVIEW PANE */}
         <section className="pane preview-pane">
           <div className="toolbar preview-toolbar">
             <span>Preview</span>
@@ -255,7 +253,6 @@ const App = () => {
               Copy HTML
             </button>
           </div>
-
           <div
             ref={previewRef}
             id="preview"
@@ -264,7 +261,6 @@ const App = () => {
         </section>
       </main>
 
-      {/* Cheat Sheet Modal */}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
     </div>
   );

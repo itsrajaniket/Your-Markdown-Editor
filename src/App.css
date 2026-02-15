@@ -444,3 +444,21 @@ textarea#editor {
     transform: translateX(0);
   }
 }
+/* --- Drag & Drop Visuals --- */
+.drag-active {
+  border: 2px dashed #61dafb !important; /* React Blue dashed border */
+  background-color: rgba(97, 218, 251, 0.1); /* Light blue tint */
+  position: relative;
+}
+
+.drag-active::after {
+  content: "Drop Markdown file here";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #61dafb;
+  font-size: 1.5rem;
+  font-weight: bold;
+  pointer-events: none;
+}
