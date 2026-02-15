@@ -61,7 +61,7 @@ Use the \`>\` character to create a blockquote:
 You can create links: [Google](https://google.com)
 
 And you can embed images:
-![React Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1920px-React-icon.svg.png)
+![React Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/256px-React-icon.svg.png)
 
 ## 7. Tables (GitHub Flavored)
 | Syntax | Description | Status |

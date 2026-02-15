@@ -3,18 +3,19 @@ import { marked } from "marked";
 import Prism from "prismjs";
 import DOMPurify from "dompurify";
 
-// Import Prism CSS theme
+// Import Components and Styles
+import HelpModal from "./HelpModal"; // <--- New Import
 import "prismjs/themes/prism-tomorrow.css";
 import "./App.css";
 import { defaultText } from "./defaultMarkdown";
 
-// Configure marked options
+// Configure marked options.
 marked.setOptions({
-  breaks: true, // specific to GitHub Flavored Markdown
+  breaks: true,
   gfm: true,
 });
 
-// Version control for your default text
+// Version control for default text
 const CURRENT_VERSION = "v1.0";
 
 const App = () => {
@@ -22,21 +23,22 @@ const App = () => {
   // 1. STATE & REFS
   // ------------------------------------------------------
 
-  // Initialize state with Version Check
+  // App State
+  const [showHelp, setShowHelp] = useState(false); // <--- New State for Modal
+
+  // Content State (Load from LocalStorage)
   const [content, setContent] = useState(() => {
     const savedVersion = localStorage.getItem("app-version");
     const savedContent = localStorage.getItem("markdown-content");
 
-    // If version changed, load new default text
     if (savedVersion !== CURRENT_VERSION) {
       localStorage.setItem("app-version", CURRENT_VERSION);
       return defaultText;
     }
-
     return savedContent || defaultText;
   });
 
-  // Refs for Scroll Synchronization and Cursor placement
+  // Refs for Scrolling & Cursor
   const textAreaRef = useRef(null);
   const previewRef = useRef(null);
 
@@ -45,10 +47,7 @@ const App = () => {
   // ------------------------------------------------------
 
   useEffect(() => {
-    // Save to local storage
     localStorage.setItem("markdown-content", content);
-
-    // Highlight code blocks
     Prism.highlightAll();
   }, [content]);
 
@@ -56,27 +55,21 @@ const App = () => {
   // 3. HANDLERS
   // ------------------------------------------------------
 
-  const handleChange = (e) => {
-    setContent(e.target.value);
-  };
+  const handleChange = (e) => setContent(e.target.value);
 
-  // Synchronized Scrolling: Editor -> Preview
+  // Synchronized Scrolling
   const handleScroll = () => {
     const editor = textAreaRef.current;
     const preview = previewRef.current;
-
     if (editor && preview) {
-      // Calculate percentage scrolled
       const scrollPercentage =
         editor.scrollTop / (editor.scrollHeight - editor.clientHeight);
-
-      // Apply percentage to preview
       preview.scrollTop =
         scrollPercentage * (preview.scrollHeight - preview.clientHeight);
     }
   };
 
-  // Formatting Toolbar Logic
+  // Insert Formatting (Bold, Italic, etc.)
   const insertMarkdown = (prefix, suffix) => {
     const textarea = textAreaRef.current;
     if (!textarea) return;
@@ -89,17 +82,15 @@ const App = () => {
     const select = text.substring(start, end);
     const after = text.substring(end);
 
-    const newText = before + prefix + select + suffix + after;
-    setContent(newText);
+    setContent(before + prefix + select + suffix + after);
 
-    // Reset cursor and focus
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(start + prefix.length, end + prefix.length);
     }, 0);
   };
 
-  // Download .md file
+  // Download File
   const handleDownload = () => {
     const element = document.createElement("a");
     const file = new Blob([content], { type: "text/markdown" });
@@ -110,7 +101,14 @@ const App = () => {
     document.body.removeChild(element);
   };
 
-  // Copy HTML to Clipboard
+  // Reset Editor
+  const resetEditor = () => {
+    if (window.confirm("Are you sure? This will delete your current text.")) {
+      setContent(defaultText);
+    }
+  };
+
+  // Copy HTML
   const copyHtml = () => {
     const rawMarkup = marked(content);
     navigator.clipboard.writeText(rawMarkup).then(() => {
@@ -118,14 +116,7 @@ const App = () => {
     });
   };
 
-  // Reset to Default
-  const resetEditor = () => {
-    if (window.confirm("Are you sure? This will delete your current text.")) {
-      setContent(defaultText);
-    }
-  };
-
-  // Safe HTML Generation
+  // Convert to HTML safely
   const getMarkdownText = () => {
     const rawMarkup = marked(content);
     const cleanMarkup = DOMPurify.sanitize(rawMarkup);
@@ -142,6 +133,16 @@ const App = () => {
       <header className="main-header">
         <h1>Markdown Studio</h1>
         <div className="header-actions">
+          {/* Help Button */}
+          <button
+            onClick={() => setShowHelp(true)}
+            className="btn"
+            style={{ color: "#aaa", fontSize: "1.2rem", marginRight: "10px" }}
+            title="Cheat Sheet"
+          >
+            ?
+          </button>
+
           <button onClick={resetEditor} className="btn btn-danger">
             Reset
           </button>
@@ -221,6 +222,9 @@ const App = () => {
           />
         </section>
       </main>
+
+      {/* Render Modal if 'showHelp' is true */}
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
     </div>
   );
 };

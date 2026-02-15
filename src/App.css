@@ -344,3 +344,103 @@ textarea#editor {
     height: 50%;
   }
 }
+/* --- Modal / Cheat Sheet Styles --- */
+
+/* The dark background behind the modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Dark semi-transparent bg */
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end; /* Aligns modal to the right */
+}
+
+/* The white slide-out panel */
+.modal-content {
+  background: #252526;
+  width: 400px;
+  max-width: 80%;
+  height: 100%;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #444;
+  animation: slideIn 0.3s ease-out; /* Smooth entrance */
+}
+
+/* Header inside the modal */
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #444;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 1.2rem;
+  color: #61dafb;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.close-btn:hover {
+  color: white;
+}
+
+/* The scrollable list of syntax */
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-body h3 {
+  color: #888;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  margin: 20px 0 10px 0;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+}
+.modal-body h3:first-child {
+  margin-top: 0;
+}
+
+/* Individual cheat sheet rows */
+.cheat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+  font-size: 0.9rem;
+}
+
+.cheat-row code {
+  background: #333;
+  padding: 3px 6px;
+  border-radius: 4px;
+  color: #d4d4d4;
+  font-family: "Consolas", monospace;
+}
+
+/* Animation Keyframes */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
